@@ -1,0 +1,96 @@
+class User:
+    def __init__(self, name, email):
+        self.name = name
+        self.email = email
+
+    def display_info(self):
+        return f"Name: {self.name}, Email: {self.email}"
+
+
+class Student(User):
+    def __init__(self, name, email, student_id):
+        super().__init__(name, email)
+        self.student_id = student_id
+        self.registered_courses = []
+
+    def register_course(self, course):
+        self.registered_courses.append(course)
+
+    def display_registered_courses(self):
+        if not self.registered_courses:
+            return "No courses registered."
+        return "\n".join([course.display_course_info() for course in self.registered_courses])
+
+
+class Instructor(User):
+    def __init__(self, name, email, office_hours):
+        super().__init__(name, email)
+        self.office_hours = office_hours
+
+    def display_info(self):
+        return super().display_info() + f", Office Hours: {self.office_hours}"
+
+
+class Course:
+    def __init__(self, course_name, description, credits, instructor):
+        self.course_name = course_name
+        self.description = description
+        self.credits = credits
+        self.instructor = instructor
+        self.schedule = []
+
+    def add_schedule(self, day, time):
+        self.schedule.append((day, time))
+
+    def display_course_info(self):
+        schedule_info = "\n".join([f"Day: {day}, Time: {time}" for day, time in self.schedule])
+        return (f"Course: {self.course_name}, Description: {self.description}, Credits: {self.credits}, "
+                f"Instructor: {self.instructor.name}\nSchedule:\n{schedule_info}")
+
+
+# Create some sample instructors and courses
+instructor1 = Instructor("Dr. Smith", "smith@university.edu", "MWF 2-3pm")
+course1 = Course("Introduction to Python", "Learn the basics of Python programming.", 3, instructor1)
+course1.add_schedule("Monday", "10:00 AM - 11:30 AM")
+course1.add_schedule("Wednesday", "10:00 AM - 11:30 AM")
+
+instructor2 = Instructor("Dr. Johnson", "johnson@university.edu", "TTh 1-2pm")
+course2 = Course("Data Structures", "Explore data structures in depth.", 4, instructor2)
+course2.add_schedule("Tuesday", "1:00 PM - 2:30 PM")
+course2.add_schedule("Thursday", "1:00 PM - 2:30 PM")
+
+available_courses = [course1, course2]
+
+# Registration form
+print("Welcome to the course registration system!")
+name = input("Enter your name: ")
+email = input("Enter your email: ")
+student_id = input("Enter your student ID: ")
+
+student = Student(name, email, student_id)
+
+# Display available courses
+print("\nAvailable Courses:")
+for i, course in enumerate(available_courses):
+    print(f"{i + 1}. {course.course_name} - {course.description} (Credits: {course.credits})")
+
+# Course registration
+while True:
+    course_choice = input("\nEnter the number of the course you want to register for (or 'done' to finish): ")
+    if course_choice.lower() == 'done':
+        break
+    try:
+        course_index = int(course_choice) - 1
+        if 0 <= course_index < len(available_courses):
+            student.register_course(available_courses[course_index])
+            print(f"Registered for {available_courses[course_index].course_name}")
+        else:
+            print("Invalid course number. Please try again.")
+    except ValueError:
+        print("Invalid input. Please enter a valid course number or 'done'.")
+
+# Display student info and registered courses
+print("\nStudent Info:")
+print(student.display_info())
+print("Registered Courses:")
+print(student.display_registered_courses())
